@@ -62,6 +62,7 @@ public class EventOnTodayService {
         List<Map<String, Object>> items = parseData.get(thisMonth).get(thisDate);
         Context context = new Context();
         context.setVariable("items", items.subList(Math.max(items.size() - 5, 0), items.size()));
+        context.setVariable("date",thisDate);
         return templateEngine.process("data", context);
     }
 

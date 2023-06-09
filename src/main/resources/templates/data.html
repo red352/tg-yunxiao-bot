@@ -1,6 +1,6 @@
-
-  <pre th:each="item : ${items}">
+<b>日期：</b><i th:text="${date}"></i>
+<pre th:each="item : ${items}">
     <b>年份</b>:<i th:text="${item.year}"></i>
     <b>标题</b>:<i th:utext="${item.title}"></i>
     <b>描述</b>:<i th:utext="${item.desc}"></i>
-  </pre>
+</pre>
