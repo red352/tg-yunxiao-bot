@@ -70,7 +70,6 @@ public class ReceivedHandler {
                 break;
             case "/historytoday":
                 String dataToday = eventOnTodayService.getDataToday();
-                System.out.println("dataToday = " + dataToday);
                 messageSender.sendHtml(id, dataToday);
                 break;
         }
