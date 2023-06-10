@@ -1,0 +1,5 @@
+<b>今日美图</b>
+<pre th:each="item : ${items}">
+    <b>标题</b>:<i th:text="${item.title}"></i>
+    <b>版权</b>:<i th:utext="${item.copyright}"></i>
+</pre>

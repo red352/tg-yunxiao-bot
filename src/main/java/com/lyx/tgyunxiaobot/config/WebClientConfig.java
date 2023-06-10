@@ -1,9 +1,10 @@
 package com.lyx.tgyunxiaobot.config;
 
+import com.lyx.tgyunxiaobot.client.BilibiliPopularClient;
+import com.lyx.tgyunxiaobot.client.BingDailyImageClient;
 import com.lyx.tgyunxiaobot.client.EventsOnHistoryClient;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -22,26 +23,40 @@ import java.util.concurrent.TimeUnit;
  */
 @Configuration
 public class WebClientConfig {
+
     @Bean
     public WebClient client() {
         return WebClient.builder()
                 .exchangeStrategies(ExchangeStrategies.builder()
                         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs().maxInMemorySize(1048576))
                         .build())
-                .clientConnector(new ReactorClientHttpConnector(
-                        HttpClient.create().doOnConnected(connection ->
-                                connection.addHandlerLast(new ReadTimeoutHandler(5, TimeUnit.SECONDS))
-                                        .addHandlerLast(new WriteTimeoutHandler(5, TimeUnit.SECONDS)))
-                ))
+                .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
+                        .doOnConnected(connection -> connection
+                                .addHandlerLast(new ReadTimeoutHandler(5, TimeUnit.SECONDS))
+                                .addHandlerLast(new WriteTimeoutHandler(5, TimeUnit.SECONDS)))))
                 .build();
     }
 
     @Bean
-    public EventsOnHistoryClient eventsOnHistory(@Autowired WebClient webClient) {
-        HttpServiceProxyFactory httpServiceProxyFactory =
-                HttpServiceProxyFactory.builder(WebClientAdapter.forClient(webClient))
-                        .blockTimeout(Duration.ofSeconds(5))
-                        .build();
-        return httpServiceProxyFactory.createClient(EventsOnHistoryClient.class);
+    public HttpServiceProxyFactory httpServiceProxyFactory() {
+        return HttpServiceProxyFactory
+                .builder(WebClientAdapter.forClient(client()))
+                .blockTimeout(Duration.ofSeconds(5))
+                .build();
+    }
+
+    @Bean
+    public EventsOnHistoryClient eventsOnHistory() {
+        return httpServiceProxyFactory().createClient(EventsOnHistoryClient.class);
+    }
+
+    @Bean
+    public BingDailyImageClient bingDailyImageClient() {
+        return httpServiceProxyFactory().createClient(BingDailyImageClient.class);
+    }
+
+    @Bean
+    public BilibiliPopularClient bilibiliPopular(){
+        return httpServiceProxyFactory().createClient(BilibiliPopularClient.class);
     }
 }

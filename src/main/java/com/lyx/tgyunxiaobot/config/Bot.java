@@ -8,9 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-import static com.lyx.tgyunxiaobot.config.BotInfo.BOT_NAME;
-import static com.lyx.tgyunxiaobot.config.BotInfo.BOT_TOKEN;
-
 
 /**
  * @author lyx
@@ -19,12 +16,13 @@ import static com.lyx.tgyunxiaobot.config.BotInfo.BOT_TOKEN;
 @Component
 public class Bot extends TelegramLongPollingBot {
 
-
     private final ReceivedHandler receivedHandler;
+    private final BotInfo info;
 
-    public Bot(  @Lazy ReceivedHandler receivedHandler) {
-        super(BOT_TOKEN);
+    public Bot(@Lazy ReceivedHandler receivedHandler, BotInfo info) {
+        super(info.getToken());
         this.receivedHandler = receivedHandler;
+        this.info = info;
     }
 
     public void onUpdateReceived(Update update) {
@@ -36,7 +34,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public String getBotUsername() {
-        return BOT_NAME;
+        return info.getName();
     }
 
     public void onRegister() {

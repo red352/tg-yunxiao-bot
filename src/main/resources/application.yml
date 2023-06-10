@@ -1,0 +1,8 @@
+
+tg:
+  bot:
+    name: "yunxiao_bot"
+    token: "***"
+spring:
+  profiles:
+    active: dev

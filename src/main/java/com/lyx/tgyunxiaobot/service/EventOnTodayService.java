@@ -30,42 +30,6 @@ public class EventOnTodayService {
     @Autowired
     private EventsOnHistoryClient historyClient;
 
-
-    public String getDataToday() {
-        String thisMonth = getThisMonth();
-        String thisDate = getThisDate();
-
-        return ((EventOnTodayService) AopContext.currentProxy()).getData(thisMonth, thisDate);
-    }
-
-    @Cacheable(value = "eventOnDay", key = "#thisDate")
-    public String getData(String thisMonth, String thisDate) {
-        Mono<String> events = historyClient.getEventsOnDay(thisMonth);
-        String block = events.block();
-        return renderData(block, thisMonth, thisDate);
-    }
-
-    @CacheEvict(value = "eventOnDay", allEntries = true)
-    @Scheduled(fixedRate = 24,timeUnit = TimeUnit.HOURS)
-    public void evictCache() {
-    }
-
-    private String renderData(String jsonData, String thisMonth, String thisDate) {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Map<String, List<Map<String, Object>>>> parseData;
-        try {
-            parseData = mapper.readValue(jsonData, new TypeReference<>() {
-            });
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        List<Map<String, Object>> items = parseData.get(thisMonth).get(thisDate);
-        Context context = new Context();
-        context.setVariable("items", items.subList(Math.max(items.size() - 5, 0), items.size()));
-        context.setVariable("date",thisDate);
-        return templateEngine.process("data", context);
-    }
-
     private static String getThisMonth() {
         int i = DateUtil.thisMonth() + 1;
         return formatDate(i);
@@ -83,6 +47,41 @@ public class EventOnTodayService {
         int dayOfMonth = DateUtil.thisDayOfMonth();
         String day = formatDate(dayOfMonth);
         return getThisMonth() + day;
+    }
+
+    public String getDataToday() {
+        String thisMonth = getThisMonth();
+        String thisDate = getThisDate();
+
+        return ((EventOnTodayService) AopContext.currentProxy()).getData(thisMonth, thisDate);
+    }
+
+    @Cacheable(value = "eventOnDay", key = "#thisDate")
+    public String getData(String thisMonth, String thisDate) {
+        Mono<String> events = historyClient.getEventsOnDay(thisMonth);
+        String block = events.block();
+        return renderData(block, thisMonth, thisDate);
+    }
+
+    @CacheEvict(value = "eventOnDay", allEntries = true)
+    @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
+    public void evictCache() {
+    }
+
+    private String renderData(String jsonData, String thisMonth, String thisDate) {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Map<String, List<Map<String, Object>>>> parseData;
+        try {
+            parseData = mapper.readValue(jsonData, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        List<Map<String, Object>> items = parseData.get(thisMonth).get(thisDate);
+        Context context = new Context();
+        context.setVariable("items", items.subList(Math.max(items.size() - 5, 0), items.size()));
+        context.setVariable("date", thisDate);
+        return templateEngine.process("data", context);
     }
 
 

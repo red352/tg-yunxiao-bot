@@ -1,0 +1,6 @@
+<b th:each="item : ${items}">
+    <b th:text="'标题:'+${item.title}"></b>
+    <b th:text="'播放量:'+${item.stat.view}"></b>
+    <b th:text="'作者:'+ ${item.owner.name}"></b>
+    <b>视频链接:<a href="${item.short_link_v2}" th:text="${item.short_link_v2}"></a></b>
+</b>
