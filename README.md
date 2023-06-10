@@ -17,3 +17,65 @@
 ![img.png](img.png)
 
 # 部署
+
+***首先配置application.yml，设置name和token***
+1. Docker部署
+
+```git
+git clone https://github.com/red352/tg-yunxiao-bot.git
+```
+
+``` dockerfile
+docker build -t tg-yunxiao-bot .
+```
+``` dockerfile
+docker run -d --name tg-yunxiao-bot tg-yunxiao-bot
+```
+
+2. 本地环境部署
+
+在`/myapp`目录运行该脚本
+
+``` shell
+#!/bin/bash
+
+# 定义变量
+PROJECT_NAME="tg-yunxiao-bot"
+PROJECT_PATH="/myapp/$PROJECT_NAME"
+JAVA_CMD="/usr/bin/java"
+
+# 检查项目目录是否存在
+if [ -d "$PROJECT_PATH" ]; then
+  echo "项目目录已存在，拉取最新代码并重启守护进程..."
+  # 杀死之前运行的 Java 守护进程
+  if [ -f "$PROJECT_PATH/pid.log" ]; then
+    pkill -F "$PROJECT_PATH/pid.log"
+    rm "$PROJECT_PATH/pid.log"
+  fi
+  # 拉取最新代码
+  cd "$PROJECT_PATH"
+  git pull --ff-only
+else
+  echo "项目目录不存在，克隆代码并启动守护进程..."
+  # 克隆代码
+  git clone https://github.com/red352/tg-yunxiao-bot.git "$PROJECT_PATH"
+  cd "$PROJECT_PATH"
+fi
+
+# 构建和启动 Java 程序
+mvn clean package -DskipTests
+echo "构建完成"
+cd target
+echo "启动中..."
+# 查找 JAR 包并启动 Java 程序
+JAR_FILE=$(find . -name "$PROJECT_NAME-*.jar" | head -1)
+if [ -z "$JAR_FILE" ]; then
+  echo "未找到 JAR 包"
+else
+    nohup "$JAVA_CMD" -jar "$JAR_FILE" >> app.log 2>&1 &
+    echo $! > pid.log
+fi
+```
+
+
+
