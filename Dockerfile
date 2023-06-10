@@ -22,4 +22,4 @@ WORKDIR $PROJECT_PATH
 
 COPY --from=build $PROJECT_PATH/target/$PROJECT_NAME-*.jar app.jar
 
-CMD ["bash", "-c", "nohup $JAVA_CMD -jar app.jar >> app.log 2>&1 & echo $! > pid.log && tail -f app.log"]
+CMD ["bash", "-c", "nohup java -jar app.jar >> app.log 2>&1 & echo $! > pid.log && tail -f app.log"]
