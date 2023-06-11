@@ -24,7 +24,7 @@ tg:
     name: "yunxiao_bot"
     token: "***"
 wallhaven:
-  key: "***"
+  key: ****
 ```
 
 
@@ -97,3 +97,9 @@ else
     echo $! > pid.log
 fi
 ```
+
+
+
+# commands
+
+<!-- include command.md -->
