@@ -102,4 +102,8 @@ fi
 
 # commands
 
+```markdown
+
 <!-- include command.md -->
+
+```
