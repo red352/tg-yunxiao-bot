@@ -1,6 +1,7 @@
 package com.lyx.tgyunxiaobot;
 
 import com.lyx.tgyunxiaobot.client.EventsOnHistoryClient;
+import com.lyx.tgyunxiaobot.client.WallhavenClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,8 @@ public class HttpClientTest {
 
     @Autowired
     private EventsOnHistoryClient eventsOnHistoryClient;
+    @Autowired
+    private WallhavenClient wallhavenClient;
 
 
     @Test
@@ -38,6 +41,13 @@ public class HttpClientTest {
                 count::countDown
         );
         count.await();
+    }
+
+    @Test
+    void wallhavenTest(){
+        Mono<String> mono = wallhavenClient.search("n4PNdLBeXbzdlbaT1ztCXd9cFD5jM9q7", "111", "111", "random", "desc", "1");
+        String block = mono.block();
+        System.out.println("block = " + block);
     }
 
 }

@@ -49,18 +49,18 @@ public class EventOnTodayService {
         return getThisMonth() + day;
     }
 
-    public String getDataToday() {
+    public String getDataToday(int num) {
         String thisMonth = getThisMonth();
         String thisDate = getThisDate();
 
-        return ((EventOnTodayService) AopContext.currentProxy()).getData(thisMonth, thisDate);
+        return ((EventOnTodayService) AopContext.currentProxy()).getData(thisMonth, thisDate, num);
     }
 
-    @Cacheable(value = "eventOnDay", key = "#thisDate")
-    public String getData(String thisMonth, String thisDate) {
+    @Cacheable(value = "eventOnDay", key = "#thisDate+#num")
+    public String getData(String thisMonth, String thisDate, int num) {
         Mono<String> events = historyClient.getEventsOnDay(thisMonth);
         String block = events.block();
-        return renderData(block, thisMonth, thisDate);
+        return renderData(block, thisMonth, thisDate, num);
     }
 
     @CacheEvict(value = "eventOnDay", allEntries = true)
@@ -68,7 +68,7 @@ public class EventOnTodayService {
     public void evictCache() {
     }
 
-    private String renderData(String jsonData, String thisMonth, String thisDate) {
+    private String renderData(String jsonData, String thisMonth, String thisDate, int num) {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Map<String, List<Map<String, Object>>>> parseData;
         try {
@@ -79,7 +79,7 @@ public class EventOnTodayService {
         }
         List<Map<String, Object>> items = parseData.get(thisMonth).get(thisDate);
         Context context = new Context();
-        context.setVariable("items", items.subList(Math.max(items.size() - 5, 0), items.size()));
+        context.setVariable("items", items.subList(Math.max(items.size() - num, 0), items.size()));
         context.setVariable("date", thisDate);
         return templateEngine.process("data", context);
     }

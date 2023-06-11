@@ -16,7 +16,7 @@ public class EventOnTodayServiceTest {
 
     @Test
     void test() {
-        String s = eventOnTodayService.getDataToday();
+        String s = eventOnTodayService.getDataToday(5);
         System.out.println("s = " + s);
     }
 }

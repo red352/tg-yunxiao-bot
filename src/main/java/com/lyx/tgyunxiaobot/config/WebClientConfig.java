@@ -3,6 +3,7 @@ package com.lyx.tgyunxiaobot.config;
 import com.lyx.tgyunxiaobot.client.BilibiliPopularClient;
 import com.lyx.tgyunxiaobot.client.BingDailyImageClient;
 import com.lyx.tgyunxiaobot.client.EventsOnHistoryClient;
+import com.lyx.tgyunxiaobot.client.WallhavenClient;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.context.annotation.Bean;
@@ -56,7 +57,12 @@ public class WebClientConfig {
     }
 
     @Bean
-    public BilibiliPopularClient bilibiliPopular(){
+    public BilibiliPopularClient bilibiliPopular() {
         return httpServiceProxyFactory().createClient(BilibiliPopularClient.class);
+    }
+
+    @Bean
+    public WallhavenClient wallhavenClient() {
+        return httpServiceProxyFactory().createClient(WallhavenClient.class);
     }
 }

@@ -1,8 +1,9 @@
-
 tg:
   bot:
     name: "yunxiao_bot"
     token: "***"
 spring:
   profiles:
-    active: dev
+    active: test
+  main:
+    web-application-type: none
