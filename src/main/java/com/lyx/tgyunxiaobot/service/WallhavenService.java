@@ -40,7 +40,7 @@ public class WallhavenService {
             threadService.submit(task);
         }
         try {
-            return queue.poll(5, TimeUnit.SECONDS);
+            return queue.poll(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -48,7 +48,7 @@ public class WallhavenService {
 
     private List<String> getData() {
         Mono<String> mono = client.search(apiKey, "111", "111", "random", "desc", "1");
-        String data = mono.block(Duration.ofSeconds(5L));
+        String data = mono.block(Duration.ofSeconds(2L));
         return renderData(data);
     }
 

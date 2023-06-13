@@ -33,8 +33,8 @@ public class WebClientConfig {
                         .build())
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
                         .doOnConnected(connection -> connection
-                                .addHandlerLast(new ReadTimeoutHandler(5, TimeUnit.SECONDS))
-                                .addHandlerLast(new WriteTimeoutHandler(5, TimeUnit.SECONDS)))))
+                                .addHandlerLast(new ReadTimeoutHandler(2, TimeUnit.SECONDS))
+                                .addHandlerLast(new WriteTimeoutHandler(2, TimeUnit.SECONDS)))))
                 .build();
     }
 

@@ -2,6 +2,8 @@ tg:
   bot:
     name: "yunxiao_bot"
     token: "***"
+wallhaven:
+  key: "***"
 spring:
   profiles:
     active: dev

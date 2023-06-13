@@ -7,6 +7,8 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -19,6 +21,8 @@ public class Bot extends TelegramLongPollingBot {
     private final ReceivedHandler receivedHandler;
     private final BotInfo info;
 
+    private final ExecutorService threadService = Executors.newFixedThreadPool(3);
+
     public Bot(@Lazy ReceivedHandler receivedHandler, BotInfo info) {
         super(info.getToken());
         this.receivedHandler = receivedHandler;
@@ -26,7 +30,8 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void onUpdateReceived(Update update) {
-        receivedHandler.handleReceived(update);
+        Runnable runnable = () -> receivedHandler.handleReceived(update);
+        threadService.submit(runnable);
     }
 
     public void onUpdatesReceived(List<Update> updates) {

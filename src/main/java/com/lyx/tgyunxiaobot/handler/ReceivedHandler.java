@@ -21,7 +21,6 @@ public class ReceivedHandler {
     private final CommandHandler commandHandler;
     private final MessageHandler messageHandler;
 
-
     public void handleReceived(Update update) {
         if (update.hasCallbackQuery()) {
             doCallback(update);
