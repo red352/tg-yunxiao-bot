@@ -72,8 +72,7 @@ public class CommandHandlerImpl implements CommandHandler {
                 Map<String, String> dataToday = bingDailyImageService.getDataToday();
                 String sendText = dataToday.get("text");
                 String sendUrl = dataToday.get("url");
-                messageSender.sendHtml(id, sendText);
-                messageSender.sendPhoto(id, sendUrl);
+                messageSender.sendPhoto(id, sendUrl, sendText);
             }
             case "/bilibilipupular" -> {
                 String popularRank = bilibiliPopularService.getPopularRank();

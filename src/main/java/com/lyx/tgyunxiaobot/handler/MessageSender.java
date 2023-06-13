@@ -2,22 +2,14 @@ package com.lyx.tgyunxiaobot.handler;
 
 import com.lyx.tgyunxiaobot.config.Bot;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.CopyMessage;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.media.InputMediaDocument;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 /**
  * @author lyx
@@ -100,7 +92,13 @@ public class MessageSender {
     }
 
     public void sendPhoto(Long who, String url) {
+        sendPhoto(who, url, null);
+    }
+
+    public void sendPhoto(Long who, String url, String html) {
         SendPhoto sendPhoto = SendPhoto.builder()
+                .caption(html)
+                .parseMode(ParseMode.HTML)
                 .photo(new InputFile(url))
                 .chatId(who)
                 .build();

@@ -4,6 +4,6 @@ tg:
     token: "***"
 spring:
   profiles:
-    active: test
+    active: dev
   main:
     web-application-type: none

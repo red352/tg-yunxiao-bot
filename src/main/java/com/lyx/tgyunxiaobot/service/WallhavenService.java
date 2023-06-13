@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author lyx
@@ -27,7 +28,7 @@ public class WallhavenService {
     @Autowired
     private WallhavenClient client;
 
-    private static final LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>(50);
+    private static final LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
     private final ExecutorService threadService = Executors.newSingleThreadExecutor();
     private final Runnable task = () -> {
         List<String> list = this.getData();
@@ -38,12 +39,16 @@ public class WallhavenService {
         if (queue.size() < 10) {
             threadService.submit(task);
         }
-        return queue.poll();
+        try {
+            return queue.poll(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<String> getData() {
         Mono<String> mono = client.search(apiKey, "111", "111", "random", "desc", "1");
-        String data = mono.block(Duration.ofSeconds(10L));
+        String data = mono.block(Duration.ofSeconds(5L));
         return renderData(data);
     }
 
