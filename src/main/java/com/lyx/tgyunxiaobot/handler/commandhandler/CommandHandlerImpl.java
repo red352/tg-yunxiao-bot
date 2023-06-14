@@ -2,17 +2,20 @@ package com.lyx.tgyunxiaobot.handler.commandhandler;
 
 import com.lyx.tgyunxiaobot.config.BotInfo;
 import com.lyx.tgyunxiaobot.handler.MessageSender;
-import com.lyx.tgyunxiaobot.keyBoradButton.MyInlineKeyboardButton;
+import com.lyx.tgyunxiaobot.keyBoradButton.DashKeyboardButton;
 import com.lyx.tgyunxiaobot.model.TextMessage;
-import com.lyx.tgyunxiaobot.service.BilibiliPopularService;
-import com.lyx.tgyunxiaobot.service.BingDailyImageService;
-import com.lyx.tgyunxiaobot.service.EventOnTodayService;
-import com.lyx.tgyunxiaobot.service.WallhavenService;
+import com.lyx.tgyunxiaobot.model.entity.User;
+import com.lyx.tgyunxiaobot.service.data.UserService;
+import com.lyx.tgyunxiaobot.service.other.BilibiliPopularService;
+import com.lyx.tgyunxiaobot.service.other.BingDailyImageService;
+import com.lyx.tgyunxiaobot.service.other.EventOnTodayService;
+import com.lyx.tgyunxiaobot.service.other.WallhavenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -28,13 +31,14 @@ public class CommandHandlerImpl implements CommandHandler {
     private final EventOnTodayService eventOnTodayService;
     private final BingDailyImageService bingDailyImageService;
     private final BilibiliPopularService bilibiliPopularService;
-    private final MyInlineKeyboardButton inlineKeyboardButton;
+    private final DashKeyboardButton inlineKeyboardButton;
     private final WallhavenService wallhavenService;
+    private final UserService userService;
 
     @Override
     public void doCommand(Update update, Message msg) {
         String text = msg.getText();
-        if (msg.isSuperGroupMessage()) {
+        if (msg.isSuperGroupMessage() || msg.isGroupMessage()) {
             doGroupCommand(text, msg);
         } else {
             doPersonalCommand(text, msg);
@@ -42,7 +46,7 @@ public class CommandHandlerImpl implements CommandHandler {
     }
 
     private void doPersonalCommand(String text, Message msg) {
-        handleCommand(text, msg.getFrom().getId(), false, null);
+        handleCommand(text, msg, false);
     }
 
     private void doGroupCommand(String text, Message msg) {
@@ -56,11 +60,13 @@ public class CommandHandlerImpl implements CommandHandler {
         } catch (Exception e) {
             return;
         }
-        handleCommand(split[0], msg.getFrom().getId(), true, msg.getChatId());
+        handleCommand(split[0], msg, true);
     }
 
-    private void handleCommand(String command, Long who, boolean sendGroup, Long chatId) {
-        Long id = sendGroup ? chatId : who;
+    private void handleCommand(String command, Message msg, boolean sendGroup) {
+        org.telegram.telegrambots.meta.api.objects.User from = msg.getFrom();
+        Long who = from.getId();
+        Long id = sendGroup ? msg.getChatId() : who;
         switch (command) {
             case "/dashboard" ->
                     messageSender.sendMenu(who, inlineKeyboardButton.getMenuText(), inlineKeyboardButton.getKeyboardM1());
@@ -81,6 +87,13 @@ public class CommandHandlerImpl implements CommandHandler {
             case "/wallhavenrandom" -> {
                 String url = wallhavenService.getDefaultRandomImage();
                 messageSender.sendPhoto(id, url);
+            }
+            case "/register" -> {
+                String result = userService.register(new User(who, from.getFirstName(), from.getLastName(), from.getUserName(), null, new Date()));
+                messageSender.sendText(who, result);
+            }
+            case "/checkin" -> {
+
             }
             default -> messageSender.sendText(id, TextMessage.NO_COMMAND);
         }

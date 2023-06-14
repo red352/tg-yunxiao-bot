@@ -1,4 +1,4 @@
-package com.lyx.tgyunxiaobot.service;
+package com.lyx.tgyunxiaobot.service.other;
 
 import cn.hutool.core.date.DateUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;

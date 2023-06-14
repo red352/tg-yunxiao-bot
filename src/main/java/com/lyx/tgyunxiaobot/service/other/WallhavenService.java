@@ -1,4 +1,4 @@
-package com.lyx.tgyunxiaobot.service;
+package com.lyx.tgyunxiaobot.service.other;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;

@@ -1,5 +1,6 @@
-package com.lyx.tgyunxiaobot.service;
+package com.lyx.tgyunxiaobot.service.other;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -30,15 +31,16 @@ public class BingDailyImageService {
     private TemplateEngine templateEngine;
 
     public Map<String, String> getDataToday() {
-        return ((BingDailyImageService) AopContext.currentProxy()).getData(0, 1);
+        return ((BingDailyImageService) AopContext.currentProxy()).getData(0, 1, DateUtil.today());
     }
 
-    @Cacheable(value = "imageOnDay",key = "#whichDay")
-    public Map<String, String> getData(int whichDay, int num) {
+    @Cacheable(value = "imageOnDay", key = "#date")
+    public Map<String, String> getData(int whichDay, int num, String date) {
         Mono<String> mono = client.getImageOnDay("js", whichDay, "zh-CN", num);
         String onDay = mono.block();
         return renderData(onDay);
     }
+
     @CacheEvict(value = "imageOnDay", allEntries = true)
     @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
     public void evictCache() {
@@ -54,7 +56,7 @@ public class BingDailyImageService {
         JSONObject jsonObject = images.getJSONObject(0);
         String url = jsonObject.get("url").toString();
         String finalUrl = urlBuilder(url);
-        return Map.of("text", text,"url", finalUrl);
+        return Map.of("text", text, "url", finalUrl);
     }
 
     private String urlBuilder(String url) {
