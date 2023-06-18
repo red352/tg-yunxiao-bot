@@ -7,6 +7,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -16,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +33,7 @@ public class DoubanService {
     @Autowired
     private TemplateEngine templateEngine;
 
+    @Cacheable(value = "DoubanNew")
     public Map<String, String> getNewMovies() {
         Document document = getDocument();
         Elements tables = document.select(".article > .indent > * > table");
@@ -53,6 +58,7 @@ public class DoubanService {
         ));
     }
 
+    @Cacheable(value = "DoubanWeek")
     public List<String> getWeeklyMovies() {
         Document document = getDocument();
         Elements movieItems = document.select("#listCont2 > li");
@@ -67,6 +73,13 @@ public class DoubanService {
             movieList.add(movie);
         }
         return renderDataList(movieList);
+    }
+
+    @CacheEvict(cacheNames = {"DoubanNew", "DoubanWeek"}, allEntries = true)
+    @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
+    public void cacheEvict() {
+        getNewMovies();
+        getWeeklyMovies();
     }
 
     private List<String> renderDataList(List<Movie> movieList) {
