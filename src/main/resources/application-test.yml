@@ -1,0 +1,12 @@
+tg:
+  bot:
+    name: "yunxiao_test_bot"
+    token: "5825411791:AAGO4BAh2RQUFtuJgT4WinGKj4ACA7bQ4rg"
+wallhaven:
+  key: n4PNdLBeXbzdlbaT1ztCXd9cFD5jM9q7
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: lyxsix4007.
+    url: jdbc:mysql://121.43.110.134:3306/tg-yunxiao-bot?characterEncoding=utf-8&useSSL=false

@@ -11,12 +11,18 @@ import com.lyx.tgyunxiaobot.service.other.BingDailyImageService;
 import com.lyx.tgyunxiaobot.service.other.EventOnTodayService;
 import com.lyx.tgyunxiaobot.service.other.WallhavenService;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
+
+import static com.lyx.tgyunxiaobot.model.CommandCache.COMMAND_CACHE_NAME;
+import static com.lyx.tgyunxiaobot.model.CommandCache.SET_CHAT;
 
 /**
  * @author lyx
@@ -34,6 +40,7 @@ public class CommandHandlerImpl implements CommandHandler {
     private final DashKeyboardButton inlineKeyboardButton;
     private final WallhavenService wallhavenService;
     private final UserService userService;
+    private final CacheManager cacheManager;
 
     @Override
     public void doCommand(Update update, Message msg) {
@@ -94,6 +101,12 @@ public class CommandHandlerImpl implements CommandHandler {
             }
             case "/checkin" -> {
 
+            }
+
+            case "/chat" -> {
+                Cache cache = cacheManager.getCache(COMMAND_CACHE_NAME);
+                Objects.requireNonNull(cache).put(who, SET_CHAT);
+                messageSender.sendText(who,"请输入问题，输入问题后请耐心等待回复");
             }
             default -> messageSender.sendText(id, TextMessage.NO_COMMAND);
         }
