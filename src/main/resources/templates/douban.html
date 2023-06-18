@@ -1,0 +1,8 @@
+<b th:block th:object="${movie}">
+    <b th:if="*{name}" th:text="*{name}">
+    </b>
+    <b th:if="*{rating}" th:text="*{rating}">
+    </b>
+    <b th:if="*{movieUrl}" th:utext="*{movieUrl}">
+    </b>
+</b>

@@ -6,10 +6,7 @@ import com.lyx.tgyunxiaobot.keyBoradButton.DashKeyboardButton;
 import com.lyx.tgyunxiaobot.model.TextMessage;
 import com.lyx.tgyunxiaobot.model.entity.User;
 import com.lyx.tgyunxiaobot.service.data.UserService;
-import com.lyx.tgyunxiaobot.service.other.BilibiliPopularService;
-import com.lyx.tgyunxiaobot.service.other.BingDailyImageService;
-import com.lyx.tgyunxiaobot.service.other.EventOnTodayService;
-import com.lyx.tgyunxiaobot.service.other.WallhavenService;
+import com.lyx.tgyunxiaobot.service.other.*;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -18,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,8 +35,10 @@ public class CommandHandlerImpl implements CommandHandler {
     private final EventOnTodayService eventOnTodayService;
     private final BingDailyImageService bingDailyImageService;
     private final BilibiliPopularService bilibiliPopularService;
-    private final DashKeyboardButton inlineKeyboardButton;
     private final WallhavenService wallhavenService;
+    private final DoubanService doubanService;
+
+    private final DashKeyboardButton inlineKeyboardButton;
     private final UserService userService;
     private final CacheManager cacheManager;
 
@@ -95,18 +95,26 @@ public class CommandHandlerImpl implements CommandHandler {
                 String url = wallhavenService.getDefaultRandomImage();
                 messageSender.sendPhoto(id, url);
             }
+            case "/doubannew" -> {
+                Map<String, String> newMovies = doubanService.getNewMovies();
+                System.out.println("newMovies = " + newMovies);
+                messageSender.sendGroupPhoto(id, newMovies);
+            }
+            case "/doubanweek" -> {
+                List<String> weeklyMovies = doubanService.getWeeklyMovies();
+                System.out.println("weeklyMovies = " + weeklyMovies);
+                StringBuilder text = new StringBuilder(weeklyMovies.size());
+                weeklyMovies.forEach(text::append);
+                messageSender.sendHtml(id, text.toString());
+            }
             case "/register" -> {
                 String result = userService.register(new User(who, from.getFirstName(), from.getLastName(), from.getUserName(), null, new Date()));
                 messageSender.sendText(who, result);
             }
-            case "/checkin" -> {
-
-            }
-
             case "/chat" -> {
                 Cache cache = cacheManager.getCache(COMMAND_CACHE_NAME);
                 Objects.requireNonNull(cache).put(who, SET_CHAT);
-                messageSender.sendText(who,"请输入问题，输入问题后请耐心等待回复");
+                messageSender.sendText(who, "请输入问题，输入问题后请耐心等待回复");
             }
             default -> messageSender.sendText(id, TextMessage.NO_COMMAND);
         }

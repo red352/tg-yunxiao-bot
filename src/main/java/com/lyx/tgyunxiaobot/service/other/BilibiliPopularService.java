@@ -37,6 +37,7 @@ public class BilibiliPopularService {
     @CacheEvict(value = "bilibiliPopularRank", allEntries = true)
     @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
     public void evictCache() {
+        getPopularRank();
     }
 
     private String renderData(String data) {
