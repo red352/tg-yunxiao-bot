@@ -2,6 +2,7 @@ package com.lyx.tgyunxiaobot.handler.messagehandler;
 
 import com.lyx.tgyunxiaobot.handler.MessageSender;
 import com.lyx.tgyunxiaobot.service.data.UserService;
+import com.lyx.tgyunxiaobot.service.other.OpenAiService;
 import com.yupi.yucongming.dev.client.YuCongMingClient;
 import com.yupi.yucongming.dev.common.BaseResponse;
 import com.yupi.yucongming.dev.model.DevChatRequest;
@@ -26,7 +27,8 @@ public class MessageHandlerImpl implements MessageHandler {
     private final CacheManager cacheManager;
     private final UserService userService;
     private final YuCongMingClient chatClient;
-    private final DevChatRequest request;
+    private final DevChatRequest yupiChatRequest;
+    private final OpenAiService openAiService;
 
     @Override
     public void doMessage(Message msg) {
@@ -51,14 +53,20 @@ public class MessageHandlerImpl implements MessageHandler {
                 boolean success = userService.setMail(who, text);
                 messageSender.sendText(who, success ? "设置邮件成功" : "设置邮件失败");
             }
-            case SET_CHAT -> {
-                request.setMessage(text);
-                BaseResponse<DevChatResponse> response = chatClient.doChat(request);
+            case SET_CHAT_YUPI -> {
+                yupiChatRequest.setMessage(text);
+                BaseResponse<DevChatResponse> response = chatClient.doChat(yupiChatRequest);
                 if (response.getCode() == 0) {
                     messageSender.sendText(who, response.getData().getContent());
                 } else {
                     messageSender.sendText(who, "暂时无法回答，请稍后再试！");
                 }
+            }
+            case SET_CHAT -> {
+                String chat = openAiService.chat(who, text);
+                messageSender.sendText(who, chat);
+            }
+            default -> {
             }
         }
     }

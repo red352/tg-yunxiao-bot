@@ -29,9 +29,22 @@ public class WebClientConfig {
                         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs().maxInMemorySize(1048576))
                         .build())
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-                        .doOnConnected(connection -> connection
-                                .addHandlerLast(new ReadTimeoutHandler(2, TimeUnit.SECONDS))
-                                .addHandlerLast(new WriteTimeoutHandler(2, TimeUnit.SECONDS)))))
+                                .doOnRequest((httpClientRequest, connection) -> {
+                                })
+                                .doOnConnect(httpClientConfig -> {
+                                })
+                                .proxy(typeSpec -> {
+                                })
+                                .doOnConnected(connection -> connection
+                                        .addHandlerLast(new ReadTimeoutHandler(2, TimeUnit.SECONDS))
+                                        .addHandlerLast(new WriteTimeoutHandler(2, TimeUnit.SECONDS))
+                                )
+                                .doOnError(
+                                        (httpClientRequest, throwable) -> throwable.printStackTrace(),
+                                        (httpClientResponse, throwable) -> throwable.printStackTrace()
+                                )
+                        )
+                )
                 .build();
     }
 
@@ -66,5 +79,10 @@ public class WebClientConfig {
     @Bean
     public DoubanClient doubanClient() {
         return httpServiceProxyFactory().createClient(DoubanClient.class);
+    }
+
+    @Bean
+    public OpenAiClient openAiClient() {
+        return httpServiceProxyFactory().createClient(OpenAiClient.class);
     }
 }

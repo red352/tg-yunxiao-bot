@@ -6,7 +6,8 @@ package com.lyx.tgyunxiaobot.model;
  */
 public class CommandCache {
     public static final String COMMAND_CACHE_NAME = "commandCache";
-    public static final String SET_MAIL = "setmail";
+    public static final String SET_MAIL = "setMail";
+    public static final String SET_CHAT = "setChat";
 
-    public static final String SET_CHAT = "setchat";
+    public static final String SET_CHAT_YUPI = "setChatYupi";
 }

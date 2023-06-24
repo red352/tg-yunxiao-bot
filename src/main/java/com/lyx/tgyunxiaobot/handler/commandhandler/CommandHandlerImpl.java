@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.lyx.tgyunxiaobot.model.CommandCache.COMMAND_CACHE_NAME;
-import static com.lyx.tgyunxiaobot.model.CommandCache.SET_CHAT;
+import static com.lyx.tgyunxiaobot.model.CommandCache.*;
 
 /**
  * @author lyx
@@ -97,12 +96,10 @@ public class CommandHandlerImpl implements CommandHandler {
             }
             case "/doubannew" -> {
                 Map<String, String> newMovies = doubanService.getNewMovies();
-                System.out.println("newMovies = " + newMovies);
                 messageSender.sendGroupPhoto(id, newMovies);
             }
             case "/doubanweek" -> {
                 List<String> weeklyMovies = doubanService.getWeeklyMovies();
-                System.out.println("weeklyMovies = " + weeklyMovies);
                 StringBuilder text = new StringBuilder(weeklyMovies.size());
                 weeklyMovies.forEach(text::append);
                 messageSender.sendHtml(id, text.toString());
@@ -111,12 +108,20 @@ public class CommandHandlerImpl implements CommandHandler {
                 String result = userService.register(new User(who, from.getFirstName(), from.getLastName(), from.getUserName(), null, new Date()));
                 messageSender.sendText(who, result);
             }
+            case "/chatbyyupi" -> {
+                doChat(who, SET_CHAT_YUPI);
+                messageSender.sendText(who, "目前正在使用 鱼皮AI，请输入问题，输入问题后请耐心等待回复");
+            }
             case "/chat" -> {
-                Cache cache = cacheManager.getCache(COMMAND_CACHE_NAME);
-                Objects.requireNonNull(cache).put(who, SET_CHAT);
-                messageSender.sendText(who, "请输入问题，输入问题后请耐心等待回复");
+                doChat(who, SET_CHAT);
+                messageSender.sendText(who, "目前正在使用 ChatGPT3.5 turbo，请输入问题，输入问题后请耐心等待回复");
             }
             default -> messageSender.sendText(id, TextMessage.NO_COMMAND);
         }
+    }
+
+    private void doChat(Long who, String chatType) {
+        Cache cache = cacheManager.getCache(COMMAND_CACHE_NAME);
+        Objects.requireNonNull(cache).put(who, chatType);
     }
 }
