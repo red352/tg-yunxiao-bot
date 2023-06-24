@@ -29,12 +29,6 @@ public class WebClientConfig {
                         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs().maxInMemorySize(1048576))
                         .build())
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-                                .doOnRequest((httpClientRequest, connection) -> {
-                                })
-                                .doOnConnect(httpClientConfig -> {
-                                })
-                                .proxy(typeSpec -> {
-                                })
                                 .doOnConnected(connection -> connection
                                         .addHandlerLast(new ReadTimeoutHandler(2, TimeUnit.SECONDS))
                                         .addHandlerLast(new WriteTimeoutHandler(2, TimeUnit.SECONDS))
