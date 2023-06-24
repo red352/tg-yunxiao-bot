@@ -30,8 +30,8 @@ public class WebClientConfig {
                         .build())
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
                                 .doOnConnected(connection -> connection
-                                        .addHandlerLast(new ReadTimeoutHandler(2, TimeUnit.SECONDS))
-                                        .addHandlerLast(new WriteTimeoutHandler(2, TimeUnit.SECONDS))
+                                        .addHandlerLast(new ReadTimeoutHandler(10, TimeUnit.SECONDS))
+                                        .addHandlerLast(new WriteTimeoutHandler(10, TimeUnit.SECONDS))
                                 )
                                 .doOnError(
                                         (httpClientRequest, throwable) -> throwable.printStackTrace(),
