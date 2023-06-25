@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import static com.lyx.tgyunxiaobot.model.CommandCache.*;
+import static com.lyx.tgyunxiaobot.model.TextMessage.CHAT_RESPONSE_ERROR;
 
 /**
  * @author lyx
@@ -59,11 +60,11 @@ public class MessageHandlerImpl implements MessageHandler {
                 if (response.getCode() == 0) {
                     messageSender.sendText(who, response.getData().getContent());
                 } else {
-                    messageSender.sendText(who, "暂时无法回答，请稍后再试！");
+                    messageSender.sendText(who, CHAT_RESPONSE_ERROR);
                 }
             }
             case SET_CHAT -> {
-                String chat = openAiService.chat(who, text);
+                String chat = openAiService.defaultChat(who, text);
                 messageSender.sendText(who, chat);
             }
             default -> {

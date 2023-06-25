@@ -30,7 +30,7 @@ public class WebClientConfig {
                         .build())
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
                                 .doOnConnected(connection -> connection
-                                        .addHandlerLast(new ReadTimeoutHandler(10, TimeUnit.SECONDS))
+                                        .addHandlerLast(new ReadTimeoutHandler(20, TimeUnit.SECONDS))
                                         .addHandlerLast(new WriteTimeoutHandler(10, TimeUnit.SECONDS))
                                 )
                                 .doOnError(

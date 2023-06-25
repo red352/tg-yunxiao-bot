@@ -1,8 +1,6 @@
 package com.lyx.tgyunxiaobot.model.other.openAi.chat;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author lyx
@@ -11,6 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Message {
     public static final String USER = "user";
     public static final String ASSISTANT = "assistant";
@@ -23,5 +22,10 @@ public class Message {
         message.setRole(USER);
         message.setContent(content);
         return message;
+    }
+
+    public Message(String role, String content) {
+        this.role = role;
+        this.content = content;
     }
 }
