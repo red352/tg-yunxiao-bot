@@ -7,6 +7,7 @@ import com.lyx.tgyunxiaobot.model.other.openAi.chat.Message;
 import com.lyx.tgyunxiaobot.model.other.openAi.chat.request.ChatRequest;
 import com.lyx.tgyunxiaobot.service.data.ChatContextService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,14 +39,16 @@ public class ChatContextServiceImpl extends ServiceImpl<ChatContextMapper, ChatC
         return chatRequest;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void saveChatResponse(Long userId, String modelName, Message responseMessage) {
-        save(ChatContext.builder()
-                .content(responseMessage.getContent())
-                .role(responseMessage.getRole())
+    public void saveChatResponse(Long userId, String modelName, List<Message> messages) {
+        List<ChatContext> chatContextList = messages.stream().map(message -> ChatContext.builder()
+                .content(message.getContent())
+                .role(message.getRole())
                 .userId(userId)
                 .modelName(modelName)
-                .build());
+                .build()).toList();
+        saveBatch(chatContextList);
     }
 }
 

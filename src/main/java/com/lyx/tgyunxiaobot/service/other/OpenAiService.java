@@ -44,7 +44,7 @@ public class OpenAiService {
         ChatResponse response = chat.blockOptional().orElseThrow(() -> new OwnException(id, CHAT_RESPONSE_ERROR));
         Message responseMessage = response.getChoices().get(0).getMessage();
         // TODO: 2023/6/25 保存 responseMessage 到上下文
-        chatContextService.saveChatResponse(id, defaultModel, responseMessage);
+        chatContextService.saveChatResponse(id, defaultModel, List.of(requestMessage,responseMessage));
         return responseMessage.getContent();
     }
 
