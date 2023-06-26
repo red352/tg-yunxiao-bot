@@ -30,8 +30,8 @@ public class OpenAiService {
     @Value("${openai.key}")
     private String key;
 
-    private static final String defaultModel = GPT_3_5_TURBO.getModelName();
-    private static final Integer maxContextLength = 10;
+    public static final String defaultModel = GPT_3_5_TURBO.getModelName();
+    public static final Integer maxContextLength = 10;
 
     public String defaultChat(Long id, String text) {
         // TODO: 2023/6/25 获取聊天上下文

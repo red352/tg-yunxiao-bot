@@ -2,6 +2,7 @@ package com.lyx.tgyunxiaobot.handler.commandhandler;
 
 import com.lyx.tgyunxiaobot.config.BotInfo;
 import com.lyx.tgyunxiaobot.handler.MessageSender;
+import com.lyx.tgyunxiaobot.keyBoradButton.ChatKeyboardButton;
 import com.lyx.tgyunxiaobot.keyBoradButton.DashKeyboardButton;
 import com.lyx.tgyunxiaobot.model.TextMessage;
 import com.lyx.tgyunxiaobot.model.entity.User;
@@ -38,6 +39,7 @@ public class CommandHandlerImpl implements CommandHandler {
     private final DoubanService doubanService;
 
     private final DashKeyboardButton inlineKeyboardButton;
+    private final ChatKeyboardButton chatKeyboardButton;
     private final UserService userService;
     private final CacheManager cacheManager;
 
@@ -115,6 +117,9 @@ public class CommandHandlerImpl implements CommandHandler {
             case "/chat" -> {
                 doChat(who, SET_CHAT);
                 messageSender.sendText(who, "目前正在使用 ChatGPT3.5 turbo，请输入问题，输入问题后请耐心等待回复");
+            }
+            case "/chatsetting" -> {
+                messageSender.sendMenu(who, chatKeyboardButton.getMenuText(), chatKeyboardButton.getM1());
             }
             default -> messageSender.sendText(id, TextMessage.NO_COMMAND);
         }

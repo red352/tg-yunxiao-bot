@@ -6,8 +6,11 @@ import com.lyx.tgyunxiaobot.model.entity.ChatContext;
 import com.lyx.tgyunxiaobot.model.other.openAi.chat.Message;
 import com.lyx.tgyunxiaobot.model.other.openAi.chat.request.ChatRequest;
 import com.lyx.tgyunxiaobot.service.data.ChatContextService;
+import com.lyx.tgyunxiaobot.service.other.OpenAiService;
+import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,14 +25,8 @@ public class ChatContextServiceImpl extends ServiceImpl<ChatContextMapper, ChatC
         implements ChatContextService {
 
     @Override
-    public ChatRequest getChatRequestContext(Long userId, String modelName, int limit) {
-        List<ChatContext> contextList = lambdaQuery()
-                .select(ChatContext::getContent, ChatContext::getRole)
-                .eq(ChatContext::getUserId, userId)
-                .eq(ChatContext::getModelName, modelName)
-                .orderByAsc(ChatContext::getCreateTime)
-                .last("LIMIT  " + limit)
-                .list();
+    public ChatRequest getChatRequestContext(Long userId, @Nullable String modelName, int limit) {
+        List<ChatContext> contextList = getChatContextList(userId, modelName, limit);
         ChatRequest chatRequest = new ChatRequest();
         chatRequest.setModel(modelName);
         List<Message> messages = contextList.stream()
@@ -37,6 +34,22 @@ public class ChatContextServiceImpl extends ServiceImpl<ChatContextMapper, ChatC
                 .collect(Collectors.toList());
         chatRequest.setMessages(messages);
         return chatRequest;
+    }
+
+    @Override
+    public List<ChatContext> getChatContextList(Long userId, String modelName, int limit) {
+        return lambdaQuery()
+                .select(ChatContext::getContent, ChatContext::getRole)
+                .eq(ChatContext::getUserId, userId)
+                .eq(StringUtils.hasText(modelName), ChatContext::getModelName, modelName)
+                .orderByAsc(ChatContext::getCreateTime)
+                .last("LIMIT  " + limit)
+                .list();
+    }
+
+    @Override
+    public List<ChatContext> getChatContextList(Long userId) {
+        return getChatContextList(userId, OpenAiService.defaultModel, OpenAiService.maxContextLength - 1);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -50,6 +63,31 @@ public class ChatContextServiceImpl extends ServiceImpl<ChatContextMapper, ChatC
                 .build()).toList();
         saveBatch(chatContextList);
     }
+
+    @Override
+    public String formatListToStringText(List<ChatContext> contextList) {
+        StringBuilder stringBuilder = new StringBuilder();
+        contextList.forEach(chatContext -> {
+            stringBuilder.append(chatContext.getModelName()).append(" ")
+                    .append(chatContext.getRole()).append(" ")
+                    .append(chatContext.getContent()).append(" ")
+                    .append(chatContext.getCreateTime())
+                    .append(System.lineSeparator());
+        });
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public boolean doDeleteContext(Long userId, @Nullable String modelName) {
+        Integer lines = baseMapper.doDeleteContext(userId, modelName);
+        return lines > 0;
+    }
+
+    @Override
+    public boolean flushContext(Long userId) {
+        return doDeleteContext(userId, OpenAiService.defaultModel);
+    }
+
 }
 
 

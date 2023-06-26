@@ -17,4 +17,12 @@
         id,user_id,model_name,
         role,content,create_time
     </sql>
+    <delete id="doDeleteContext">
+        DELETE
+        FROM chat_context
+        WHERE user_id = #{userId}
+        <if test="modelName != null and modelName != ''">
+            AND model_name = #{modelName}
+        </if>
+    </delete>
 </mapper>

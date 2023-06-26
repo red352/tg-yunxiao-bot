@@ -2,6 +2,7 @@ package com.lyx.tgyunxiaobot.mapper;
 
 import com.lyx.tgyunxiaobot.model.entity.ChatContext;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 
 /**
 * @author lyx
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface ChatContextMapper extends BaseMapper<ChatContext> {
 
+    Integer doDeleteContext(Long userId, String modelName);
 }
 
 
