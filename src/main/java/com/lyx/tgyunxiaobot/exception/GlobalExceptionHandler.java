@@ -1,6 +1,7 @@
 package com.lyx.tgyunxiaobot.exception;
 
 import com.lyx.tgyunxiaobot.handler.MessageSender;
+import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,5 +26,10 @@ public class GlobalExceptionHandler {
     public void ownException(OwnException e) {
         e.printStackTrace();
         sender.sendText(e.getWho(), e.getMessage());
+    }
+
+    @ExceptionHandler(ReadTimeoutException.class)
+    public void nettyReadTimeoutError(ReadTimeoutException e) {
+        e.printStackTrace();
     }
 }

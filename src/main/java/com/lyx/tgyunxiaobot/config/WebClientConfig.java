@@ -25,29 +25,24 @@ public class WebClientConfig {
     @Bean
     public WebClient client() {
         return WebClient.builder()
-                .exchangeStrategies(ExchangeStrategies.builder()
-                        .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs().maxInMemorySize(1048576))
-                        .build())
+                .exchangeStrategies(ExchangeStrategies.builder().
+                        codecs(clientCodecConfigurer -> clientCodecConfigurer
+                                .defaultCodecs().maxInMemorySize(1024 * 1024 * 10)).build())
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-                                .doOnConnected(connection -> connection
-                                        .addHandlerLast(new ReadTimeoutHandler(20, TimeUnit.SECONDS))
-                                        .addHandlerLast(new WriteTimeoutHandler(10, TimeUnit.SECONDS))
-                                )
-                                .doOnError(
-                                        (httpClientRequest, throwable) -> throwable.printStackTrace(),
-                                        (httpClientResponse, throwable) -> throwable.printStackTrace()
-                                )
+                        .doOnConnected(connection -> connection
+                                .addHandlerLast(new ReadTimeoutHandler(30, TimeUnit.SECONDS))
+                                .addHandlerLast(new WriteTimeoutHandler(10, TimeUnit.SECONDS))
                         )
+                        .doOnError(
+                                (httpClientRequest, throwable) -> throwable.printStackTrace(),
+                                (httpClientResponse, throwable) -> throwable.printStackTrace()))
                 )
                 .build();
     }
 
     @Bean
     public HttpServiceProxyFactory httpServiceProxyFactory() {
-        return HttpServiceProxyFactory
-                .builder(WebClientAdapter.forClient(client()))
-                .blockTimeout(Duration.ofSeconds(5))
-                .build();
+        return HttpServiceProxyFactory.builder(WebClientAdapter.forClient(client())).blockTimeout(Duration.ofSeconds(5)).build();
     }
 
     @Bean
