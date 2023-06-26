@@ -39,10 +39,9 @@ public class ChatContextServiceImpl extends ServiceImpl<ChatContextMapper, ChatC
     @Override
     public List<ChatContext> getChatContextList(Long userId, String modelName, int limit) {
         return lambdaQuery()
-                .select(ChatContext::getContent, ChatContext::getRole)
                 .eq(ChatContext::getUserId, userId)
                 .eq(StringUtils.hasText(modelName), ChatContext::getModelName, modelName)
-                .orderByAsc(ChatContext::getCreateTime)
+                .orderByDesc(ChatContext::getCreateTime)
                 .last("LIMIT  " + limit)
                 .list();
     }

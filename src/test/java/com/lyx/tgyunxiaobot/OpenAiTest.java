@@ -19,4 +19,5 @@ public class OpenAiTest {
         String content = service.defaultChat(100L, "你好");
         System.out.println("content = " + content);
     }
+
 }
